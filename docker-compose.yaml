@@ -1,0 +1,62 @@
+name: shared services
+services:
+  # Web server and reverse proxy
+  # Proxies whatever it can to the appropriate service
+  caddy:
+    # https://hub.docker.com/_/caddy
+    image: caddy:2
+    restart: always
+
+  # Customer support
+  chatwoot:
+    #
+    image: chatwoot/chatwoot:latest-ce
+    restart: always
+
+  # Full text search engine
+  meilisearch:
+    # https://hub.docker.com/r/getmeili/meilisearch/tags
+    image: getmeili/meilisearch:v1
+    restart: always
+
+  # Queue system (and cache if diskcache is not suitable)
+  # Redis-fork
+  valkey:
+    # https://hub.docker.com/r/bitnami/valkey
+    image: bitnami/valkey:7.2
+    restart: always
+
+  # Relational database
+  postgres:
+    # https://hub.docker.com/_/postgres
+    image: postgres:16
+    restart: always
+
+  # User analytics - respects user privacy
+  # https://github.com/plausible/community-edition/blob/v2.1.1/docker-compose.yml
+  plausible:
+    # https://github.com/plausible/analytics/pkgs/container/community-edition
+    image: ghcr.io/plausible/community-edition:v2
+    restart: always
+    command: sh -c "sleep 10 && /entrypoint.sh db createdb && /entrypoint.sh db migrate && /entrypoint.sh run"
+    depends_on:
+      - postgres
+      - clickhouse
+    env_file:
+      - env/plausible/plausible.env
+
+  # Analtyics database (e.g. for plausible)
+  clickhouse:
+    # https://hub.docker.com/r/clickhouse/clickhouse-server/
+    image: clickhouse/clickhouse-server:24-alpine
+    restart: always
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+
+  # Backup service (primarily for the database)
+  borg:
+    #
+
+volumes:

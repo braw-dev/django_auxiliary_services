@@ -1,0 +1,10 @@
+---
+- name: Provision Vagrant
+  hosts: all
+  # This just imports other playbooks for development with Vagrant
+  tasks:
+    - ansible.builtin.debug:
+        msg: "Provisioning Vagrant"
+
+- name: Include other playbooks
+  ansible.builtin.import_playbook: "setup.yaml"

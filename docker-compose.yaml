@@ -6,10 +6,18 @@ services:
     # https://hub.docker.com/_/caddy
     image: caddy:2
     restart: always
+    ports:
+      - "1080:80"
+      - "1443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+      - ./conf/caddy/Caddyfile:/etc/caddy/Caddyfile
+      - /etc/caddy/sites-enabled:/etc/caddy/sites-enabled
 
   # Customer support
   chatwoot:
-    #
+    # https://hub.docker.com/r/chatwoot/chatwoot
     image: chatwoot/chatwoot:latest-ce
     restart: always
 
@@ -25,12 +33,16 @@ services:
     # https://hub.docker.com/r/bitnami/valkey
     image: bitnami/valkey:7.2
     restart: always
+    env_file:
+      - env/valkey/valkey.env
 
   # Relational database
   postgres:
     # https://hub.docker.com/_/postgres
     image: postgres:16
     restart: always
+    env_file:
+      - env/postgres/postgres.env
 
   # User analytics - respects user privacy
   # https://github.com/plausible/community-edition/blob/v2.1.1/docker-compose.yml
@@ -57,6 +69,13 @@ services:
 
   # Backup service (primarily for the database)
   borg:
-    #
+    # https://github.com/borgmatic-collective/docker-borgmatic/pkgs/container/borgmatic/versions
+    image: borgmatic/borgmatic:1.8
+    env_file:
+      - env/borgmatic/borgmatic.env
 
 volumes:
+  caddy_data:
+    external: true
+  caddy_config:
+  postgres_data:

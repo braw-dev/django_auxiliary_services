@@ -16,3 +16,11 @@ caddy validate
 
 caddy reload
 ```
+
+## Infrastructure
+
+### Development
+
+_Note: Weird virtualization issue may need [docker-desktop to be stopped](https://forums.virtualbox.org/viewtopic.php?t=107117)_
+
+Use Vagrant+Virtualbox for development testing of the Ansible playbooks.
